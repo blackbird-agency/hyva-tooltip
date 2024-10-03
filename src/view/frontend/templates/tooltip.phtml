@@ -1,0 +1,143 @@
+<?php
+
+declare(strict_types=1);
+
+use Blackbird\NonceProvider\ViewModel\NonceProvider;
+
+/** @var NonceProvider $nonceProvider */
+?>
+
+<script <?= $nonceProvider->renderNonceAttribute() ?>>
+    (function(blackbird) {
+        blackbird.tooltip = (
+            {
+                buttonSelector = null,
+                tooltipSelector = null,
+                tooltipPlacement = 'bottom',
+            }
+        ) => {
+            return {
+                button: null,
+                tooltip: null,
+                cleanup: null,
+    
+                init() {
+                    this.asignElements();
+                    this.setAccessibilityAttributes();
+    
+                    this.loadLibrary().then(() => this.buildTooltip());
+                },
+                asignElements() {
+                    if (!buttonSelector && !tooltipSelector) {
+                        throw new Error('You must provide a buttonSelector or a tooltipSelector');
+                        return;
+                    }
+                    
+                    if (buttonSelector) {
+                        this.button = document.querySelector(buttonSelector);
+                    }
+                    
+                    if (tooltipSelector) {
+                        this.tooltip = document.querySelector(tooltipSelector);
+                    }
+                    
+                    if (!this.button) {
+                        this.button = this.$root;
+                    }
+                    
+                    if (!this.tooltip) {
+                        this.tooltip = this.$root;
+                    }
+                },
+                setAccessibilityAttributes() {
+                    this.button.setAttribute('aria-describedby', this.tooltip.id ?? 'tooltip');
+                    this.tooltip.setAttribute('role', 'tooltip');
+                },
+                async loadLibrary() {
+                    try {
+                        await blackbird.loadExternalScript("https://cdn.jsdelivr.net/npm/@floating-ui/core@1.6.0");
+                        await blackbird.loadExternalScript("https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.3");
+                    } catch(error) {
+                        console.error(error);
+                    }
+                },
+                buildTooltip() {
+                    this.button.addEventListener('mouseenter', () => this.showTooltip());
+                    this.button.addEventListener('mouseleave', () => this.hideTooltip());
+                    this.button.addEventListener('focus', () => this.showTooltip());
+                    this.button.addEventListener('blur', () => this.hideTooltip());
+                },
+                updateTooltip() {
+                    const {offset, flip, shift, arrow, computePosition, autoUpdate} = window.FloatingUIDOM;
+
+                    let arrowElement = this.tooltip.querySelector('[arrow]');
+                    if (!arrowElement) {
+                        arrowElement = document.createElement('div');
+                        arrowElement.setAttribute('arrow', '');
+                        this.tooltip.appendChild(arrowElement);
+                    }
+
+                    const arrowLength = arrowElement.offsetWidth;
+                    // Get half the arrow box's hypotenuse length
+                    const floatingOffset = Math.sqrt(2 * arrowLength ** 2) / 2;
+
+                    this.cleanupAutoUpdate();
+                    this.cleanup = autoUpdate(this.button, this.tooltip, () => {
+                        computePosition(this.button, this.tooltip, {
+                            placement: tooltipPlacement,
+                            middleware: [
+                                offset(floatingOffset),
+                                shift(),
+                                flip(),
+                                arrow({element: arrowElement}),
+                            ],
+                        }).then(({x, y, middlewareData, placement}) => {
+                                Object.assign(this.tooltip.style, {
+                                    left: `${x}px`,
+                                    top: `${y}px`
+                                });
+
+                                const side = placement.split("-")[0];
+    
+                                const staticSide = {
+                                    top: "bottom",
+                                    right: "left",
+                                    bottom: "top",
+                                    left: "right"
+                                }[side];
+
+                                if (middlewareData.arrow) {
+                                    const {x, y} = middlewareData.arrow;
+
+                                    Object.assign(arrowElement.style, {
+                                        left: x != null ? `${x}px` : '',
+                                        top: y != null ? `${y}px` : '',
+                                        // Ensure the static side gets unset when
+                                        // flipping to other placements' axes.
+                                        right: "",
+                                        bottom: "",
+                                        [staticSide]: `${-arrowLength / 2}px`,
+                                    });
+                                }
+                            }
+                        );
+                    });
+                },
+                showTooltip() {
+                    this.tooltip.setAttribute('show', '');
+                    this.updateTooltip();
+                },
+                hideTooltip() {
+                    this.tooltip.removeAttribute('show');
+                    this.cleanupAutoUpdate();
+                },
+                cleanupAutoUpdate() {
+                    if (this.cleanup) {
+                        this.cleanup();
+                        this.cleanup = null;
+                    }
+                }
+            }
+        }
+    })( window.blackbird = window.blackbird || {} );
+</script>

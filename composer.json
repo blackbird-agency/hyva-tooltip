@@ -1,0 +1,24 @@
+{
+  "name": "blackbird/hyva-tooltip",
+  "version": "1.0.0",
+  "description": "N/A",
+  "type": "magento2-module",
+  "require": {
+    "magento/framework": "*",
+    "hyva-themes/magento2-theme-module": "*",
+    "hyva-themes/magento2-compat-module-fallback": "*",
+    "blackbird/external-resources-loader": "*",
+    "blackbird/module-nonce-provider": "*",
+  },
+  "license": [
+    "Proprietary"
+  ],
+  "autoload": {
+    "files": [
+      "src/registration.php"
+    ],
+    "psr-4": {
+      "Blackbird\\HyvaTooltip\\": "src/"
+    }
+  }
+}

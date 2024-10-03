@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <referenceContainer name="after.body.start">
+            <block name="blackbird.tooltip" template="Blackbird_HyvaTooltip::tooltip.phtml" />
+        </referenceContainer>
+        <referenceBlock name="alpine-defer-rules">
+            <arguments>
+                <argument name="deferred_components" xsi:type="array">
+                    <item name="[x-data^='blackbird.tooltip']" xsi:type="string">intersect</item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>
