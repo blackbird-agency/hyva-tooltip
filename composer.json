@@ -1,17 +1,25 @@
 {
   "name": "blackbird/hyva-tooltip",
-  "version": "1.0.0",
-  "description": "N/A",
+  "version": "1.0.1",
+  "authors": [
+    {
+      "name": "Blackbird Agency",
+      "email": "contact@bird.eu",
+      "homepage": "https://black.bird.eu/"
+    }
+  ],
+  "description": "Easily add tooltips to your website",
   "type": "magento2-module",
   "require": {
+    "php": ">=8.0.0",
     "magento/framework": "*",
     "hyva-themes/magento2-theme-module": "*",
     "hyva-themes/magento2-compat-module-fallback": "*",
     "blackbird/external-resources-loader": "*",
-    "blackbird/module-nonce-provider": "*",
+    "blackbird/module-nonce-provider": "*"
   },
   "license": [
-    "Proprietary"
+    "MIT"
   ],
   "autoload": {
     "files": [
