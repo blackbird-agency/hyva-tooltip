@@ -23,6 +23,7 @@ use Blackbird\NonceProvider\ViewModel\NonceProvider;
     
                 init() {
                     this.asignElements();
+                    this.unhideTooltip();
                     this.setAccessibilityAttributes();
     
                     this.loadLibrary().then(() => this.buildTooltip());
@@ -48,6 +49,9 @@ use Blackbird\NonceProvider\ViewModel\NonceProvider;
                     if (!this.tooltip) {
                         this.tooltip = this.$root;
                     }
+                },
+                unhideTooltip() {
+                    this.tooltip.style.display = 'block';
                 },
                 setAccessibilityAttributes() {
                     this.button.setAttribute('aria-describedby', this.tooltip.id ?? 'tooltip');

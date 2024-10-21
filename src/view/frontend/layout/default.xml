@@ -9,7 +9,7 @@
         <referenceBlock name="alpine-defer-rules">
             <arguments>
                 <argument name="deferred_components" xsi:type="array">
-                    <item name="[x-data^='blackbird.tooltip']" xsi:type="string">intersect</item>
+                    <item name="[x-data^='blackbird.tooltip']" xsi:type="string">idle</item>
                 </argument>
             </arguments>
         </referenceBlock>
