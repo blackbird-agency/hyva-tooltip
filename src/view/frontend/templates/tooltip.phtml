@@ -20,12 +20,13 @@ use Blackbird\NonceProvider\ViewModel\NonceProvider;
                 button: null,
                 tooltip: null,
                 cleanup: null,
-    
+                hideTooltipTimeout: null,
+
                 init() {
                     this.asignElements();
                     this.unhideTooltip();
                     this.setAccessibilityAttributes();
-    
+
                     this.loadLibrary().then(() => this.buildTooltip());
                 },
                 asignElements() {
@@ -33,19 +34,19 @@ use Blackbird\NonceProvider\ViewModel\NonceProvider;
                         throw new Error('You must provide a buttonSelector or a tooltipSelector');
                         return;
                     }
-                    
+
                     if (buttonSelector) {
                         this.button = document.querySelector(buttonSelector);
                     }
-                    
+
                     if (tooltipSelector) {
                         this.tooltip = document.querySelector(tooltipSelector);
                     }
-                    
+
                     if (!this.button) {
                         this.button = this.$root;
                     }
-                    
+
                     if (!this.tooltip) {
                         this.tooltip = this.$root;
                     }
@@ -66,10 +67,12 @@ use Blackbird\NonceProvider\ViewModel\NonceProvider;
                     }
                 },
                 buildTooltip() {
-                    this.button.addEventListener('mouseenter', () => this.showTooltip());
-                    this.button.addEventListener('mouseleave', () => this.hideTooltip());
-                    this.button.addEventListener('focus', () => this.showTooltip());
-                    this.button.addEventListener('blur', () => this.hideTooltip());
+                    this.tooltip.addEventListener('mouseenter', () => this.requestShowTooltip());
+                    this.tooltip.addEventListener('mouseleave', () => this.requestHideTooltip());
+                    this.button.addEventListener('mouseenter', () => this.requestShowTooltip());
+                    this.button.addEventListener('mouseleave', () => this.requestHideTooltip());
+                    this.button.addEventListener('focus', () => this.requestShowTooltip());
+                    this.button.addEventListener('blur', () => this.requestHideTooltip());
                 },
                 updateTooltip() {
                     const {offset, flip, shift, arrow, computePosition, autoUpdate} = window.FloatingUIDOM;
@@ -102,7 +105,7 @@ use Blackbird\NonceProvider\ViewModel\NonceProvider;
                                 });
 
                                 const side = placement.split("-")[0];
-    
+
                                 const staticSide = {
                                     top: "bottom",
                                     right: "left",
@@ -134,6 +137,20 @@ use Blackbird\NonceProvider\ViewModel\NonceProvider;
                 hideTooltip() {
                     this.tooltip.removeAttribute('show');
                     this.cleanupAutoUpdate();
+                },
+                requestShowTooltip() {
+                    if (this.hideTooltipTimeout) {
+                        clearTimeout(this.hideTooltipTimeout);
+                        this.hideTooltipTimeout = null;
+                        return;
+                    }
+                    this.showTooltip();
+                },
+                requestHideTooltip() {
+                    this.hideTooltipTimeout = setTimeout(() => {
+                        this.hideTooltip();
+                        this.hideTooltipTimeout = null;
+                    }, 100);
                 },
                 cleanupAutoUpdate() {
                     if (this.cleanup) {
