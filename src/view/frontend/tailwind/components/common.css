@@ -1,6 +1,6 @@
 @layer components {
     [blackbird-tooltip] {
-        @apply hidden max-w-[min(100%,19rem)] absolute top-0 left-0 bg-secondary text-secondary py-1 px-2 rounded
+        @apply hidden w-max max-w-[min(100%,19rem)] absolute top-0 left-0 bg-secondary text-secondary py-1 px-2 rounded
                pointer-events-none opacity-0 transition-opacity z-20;
         &[show] {
             @apply pointer-events-auto opacity-100;
